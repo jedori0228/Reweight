@@ -368,12 +368,12 @@ void GReWeightXSecMEC::SetSystematic(GSyst_t syst, double twk_dial)
   // Handle the knobs that are independent of interaction type first
   if ( syst == kXSecTwkDial_DecayAngMEC ) {
     fDecayAngTwkDial = twk_dial;
-//    std::cout << "fDecayAngTwkDial " << fDecayAngTwkDial << std::endl;
+    //std::cout << "fDecayAngTwkDial " << fDecayAngTwkDial << std::endl;
     return;
   }
   if ( syst == kXSecTwkDial_DecayAng2MEC ) {
     fDecayAng2TwkDial = twk_dial;
- //   std::cout << "fDecayAng2TwkDial " << fDecayAng2TwkDial << std::endl;
+    //std::cout << "fDecayAng2TwkDial " << fDecayAng2TwkDial << std::endl;
     return;
   }
   else if ( syst == kXSecTwkDial_FracPN_CCMEC ) {
@@ -424,7 +424,7 @@ void GReWeightXSecMEC::Reset(void)
 
  
   fDecayAngTwkDial = 0.;
-  fDecayAng2TwkDial = 0.;
+  fDecayAng2TwkDial = 1.; // DEBUG JSKIM
   fCCXSecShapeTwkDial = 0.;
   fCCXSecShapeEmpiricalTwkDial = 0.;
   fCCXSecShapeMartiniTwkDial = 0.;
@@ -463,6 +463,7 @@ void GReWeightXSecMEC::Reconfigure(void)
 //_______________________________________________________________________________________
 double GReWeightXSecMEC::CalcWeight(const genie::EventRecord& event)
 {
+
   bool is_mec = event.Summary()->ProcInfo().IsMEC();
   if ( !is_mec ) return 1.;
 
@@ -489,7 +490,7 @@ void GReWeightXSecMEC::Init(void) {
 
   // Set the tweak dials to their default values
   fDecayAngTwkDial = 0.;
-  fDecayAng2TwkDial = 0.;
+  fDecayAng2TwkDial = 1.;
   fFracPN_CCTwkDial = 0.;
   fFracDelta_CCTwkDial = 0.;
   fCCXSecShapeTwkDial = 0.;
@@ -715,7 +716,11 @@ double GReWeightXSecMEC::CalcWeightAngularDist(const genie::EventRecord& event)
   // a second tweak dial twk_dial2 in order to change the frequency of the harmonic 
   // function. 
   double weight = 3.*twk_dial*std::pow(std::cos(twk_dial2*theta_N1), 2) + (1. - twk_dial);
-
+/*
+  printf("[JSKIMDEBUG][CalcWeightAngularDist] twk_dial = %f\n", twk_dial);
+  printf("[JSKIMDEBUG][CalcWeightAngularDist] twk_dial2 = %f\n", twk_dial2);
+  printf("[JSKIMDEBUG][CalcWeightAngularDist] -> weight = %f\n", weight);
+*/
   return weight;
 }
 //_______________________________________________________________________________________
@@ -1489,11 +1494,11 @@ double GReWeightXSecMEC::CalcWeight2p2hEnergyDependence(const genie::EventRecord
     // if( E_nu < 1.2 ){
     if( E_nu < 10.0 ){
       // weight = fEnergyDependenceTwkDial + ( 1 - fEnergyDependenceTwkDial ) / r ; // For dial 1 being CV and dial 0 being tweaked
-      weight = 1 - fEnergyDependenceTwkDial + fEnergyDependenceTwkDial / r ; // For dial 0 being CV and dial 1 being tweaked
+      weight = 1 - fEnergyDependenceTwkDial + fEnergyDependenceTwkDial * r ; // For dial 0 being CV and dial 1 being tweaked
     } 
     else{
       // weight = fEnergyDependenceTwkDial + ( 1 - fEnergyDependenceTwkDial ) / r ;
-      weight = 1 - fEnergyDependenceTwkDial + fEnergyDependenceTwkDial / r ;
+      weight = 1 - fEnergyDependenceTwkDial + fEnergyDependenceTwkDial * r ;
     }
     // ... or antineutrino
   } 
@@ -1517,7 +1522,7 @@ double GReWeightXSecMEC::CalcWeight2p2hEnergyDependence(const genie::EventRecord
     // if( E_nu < 1.2 ){
     if( E_nu < 10.0 ){
       // weight = fEnergyDependenceTwkDial + ( 1 - fEnergyDependenceTwkDial ) / r ;
-      weight = 1 - fEnergyDependenceTwkDial + fEnergyDependenceTwkDial / r ;
+      weight = 1 - fEnergyDependenceTwkDial + fEnergyDependenceTwkDial * r ;
     }
     else{
       // weight = fEnergyDependenceTwkDial + ( 1 - fEnergyDependenceTwkDial ) / r ;
