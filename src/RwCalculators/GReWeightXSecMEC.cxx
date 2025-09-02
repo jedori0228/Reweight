@@ -1556,17 +1556,25 @@ double GReWeightXSecMEC::GetXSecIntegral(const XSecAlgorithmI* xsec_alg,
 
     // don't try to expand if no filename actually given ...
     std::string expected_spline_path = "${AR23_Valencia2p2h_Spline}";
-    std::string full_expected_spline_path = gSystem->ExpandPathName(expected_spline_path.c_str());
-    printf("[GReWeightXSecMEC::GetXSecIntegral] expected_spline_path = %s\n", expected_spline_path.c_str());
-    printf("[GReWeightXSecMEC::GetXSecIntegral] full_expected_spline_path = %s\n", full_expected_spline_path.c_str());
 
-    printf("[GReWeightXSecMEC::GetXSecIntegral] Reading spline..\n");
-    utils::app_init::XSecTable(full_expected_spline_path, false);
-    std::ostringstream oss;
-    xssl->Print(oss);                // write into string buffer
-    printf("[GReWeightXSecMEC::GetXSecIntegral] XSecSplineList:\n%s\n", oss.str().c_str());
-    spline_computed = xssl->SplineExists( xsec_alg, interaction );
-    printf("[GReWeightXSecMEC::GetXSecIntegral] spline_computed = %d\n", spline_computed);
+    try{
+      std::string full_expected_spline_path = gSystem->ExpandPathName(expected_spline_path.c_str());
+      printf("[GReWeightXSecMEC::GetXSecIntegral] full_expected_spline_path = %s\n", full_expected_spline_path.c_str());
+      bool SplineExist = !(gSystem->AccessPathName(full_expected_spline_path.c_str()));
+      printf("[GReWeightXSecMEC::GetXSecIntegral] SplineExist = %d\n", SplineExist);
+      if(SplineExist){
+        printf("[GReWeightXSecMEC::GetXSecIntegral] Reading spline..\n");
+        utils::app_init::XSecTable(full_expected_spline_path, false);
+        std::ostringstream oss;
+        xssl->Print(oss);                // write into string buffer
+        printf("[GReWeightXSecMEC::GetXSecIntegral] XSecSplineList:\n%s\n", oss.str().c_str());
+        spline_computed = xssl->SplineExists( xsec_alg, interaction );
+        printf("[GReWeightXSecMEC::GetXSecIntegral] spline_computed = %d\n", spline_computed);
+      }
+    }
+    catch(...){
+
+    }
 
     if(!spline_computed){
       printf("[GReWeightXSecMEC::GetXSecIntegral] Creating spline..\n");
