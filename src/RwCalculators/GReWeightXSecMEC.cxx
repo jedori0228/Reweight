@@ -40,6 +40,8 @@
 
 #include <iomanip>
 
+#include <TSystem.h>
+
 using namespace genie;
 using namespace genie::rew;
 
@@ -1538,44 +1540,40 @@ double GReWeightXSecMEC::GetXSecIntegral(const XSecAlgorithmI* xsec_alg,
 
   assert( xssl );
 
-  // Need to force this if we want to use the spline (Valencia 2p2h) from other tune
-  //xssl->SetCurrentTune("G18_10a_00_000");
-
   // First check if a total cross section spline is already available
   // for the requested cross section model and interaction. If it is,
   // use it to get the integrated cross section.
-  std::string curr_tune = xssl->CurrentTune();
 /*
+  std::string curr_tune = xssl->CurrentTune();
   bool spline_computed = xssl->HasSplineFromTune( curr_tune )
     && xssl->SplineExists( xsec_alg, interaction );
 */
+
   bool spline_computed = xssl->SplineExists( xsec_alg, interaction );
 
   if( !spline_computed ){
-/*
+
+
+    // don't try to expand if no filename actually given ...
+    std::string expected_spline_path = "${AR23_Valencia2p2h_Spline}";
+    std::string full_expected_spline_path = gSystem->ExpandPathName(expected_spline_path.c_str());
+    printf("[GReWeightXSecMEC::GetXSecIntegral] expected_spline_path = %s\n", expected_spline_path.c_str());
+    printf("[GReWeightXSecMEC::GetXSecIntegral] full_expected_spline_path = %s\n", full_expected_spline_path.c_str());
+
     printf("[GReWeightXSecMEC::GetXSecIntegral] Reading spline..\n");
-    utils::app_init::XSecTable("/vol/data/GENIE/AR23_20i_00_000/xsec/gxspl-FNALsmall.xml", false);
+    utils::app_init::XSecTable(full_expected_spline_path, false);
     std::ostringstream oss;
     xssl->Print(oss);                // write into string buffer
     printf("[GReWeightXSecMEC::GetXSecIntegral] XSecSplineList:\n%s\n", oss.str().c_str());
-*/
+    spline_computed = xssl->SplineExists( xsec_alg, interaction );
+    printf("[GReWeightXSecMEC::GetXSecIntegral] spline_computed = %d\n", spline_computed);
 
-    printf("[GReWeightXSecMEC::GetXSecIntegral] Creating spline..\n");
-    xssl->CreateSpline(xsec_alg, interaction, 250, 0.01, 100.);
-    printf("[GReWeightXSecMEC::GetXSecIntegral] Done!\n");
-    xssl->SaveAsXml("/vol/work/250813_Test_Karim_CCMEC/xsec_spline_valencia.xml");
-
-/*
-    printf("[GReWeightXSecMEC::GetXSecIntegral] Reading spline..\n");
-    xssl->LoadFromXml("/vol/data/GENIE/G18_10a_00_000/xsec/G18_10a_00_000_v320_splines.xml", true);
-    printf("[GReWeightXSecMEC::GetXSecIntegral] Done!\n");
-*/
-
-/*
-    std::ostringstream oss;
-    xssl->Print(oss);                // write into string buffer
-    printf("[GReWeightXSecMEC::GetXSecIntegral] XSecSplineList:\n%s\n", oss.str().c_str());
-*/
+    if(!spline_computed){
+      printf("[GReWeightXSecMEC::GetXSecIntegral] Creating spline..\n");
+      xssl->CreateSpline(xsec_alg, interaction, 250, 0.01, 100.);
+      printf("[GReWeightXSecMEC::GetXSecIntegral] Done!\n");
+      xssl->SaveAsXml("/vol/work/250813_Test_Karim_CCMEC/xsec_spline_valencia.xml");
+    }
 
     printf("[GReWeightXSecMEC::GetXSecIntegral] Calling SplineExists\n");
     spline_computed = xssl->SplineExists( xsec_alg, interaction );
