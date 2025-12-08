@@ -324,6 +324,11 @@ void GReWeightNuXSecCCQE::Reconfigure(void)
       alg_key << fZExpPath << "QEL-Z_A" << i+1;
       r.Set(alg_key.str(), fZExpCurr[i]);
     }
+    if(fUseCustomT0){
+      alg_key.str("");
+      alg_key << fZExpPath << "QEL-T0";
+      r.Set(alg_key.str(), fZExpT0);
+    }
   }
   fXSecModel->Configure(r);
 

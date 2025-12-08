@@ -69,6 +69,7 @@ namespace rew   {
    void SetMaPath   (string p) { fMaPath     = p;    }
    // z-expansion specific options
    void SetZExpPath    (string p){ fZExpPath    = p;   }
+   void SetZExpT0      (double t0){ fZExpT0 = t0; fUseCustomT0 = true; }
    // RunningMa specific options
    void SetE0Path    (string p){ fE0Path    = p;   }
 
@@ -118,6 +119,8 @@ namespace rew   {
    // unused // int     fZExpCurrIdx; ///< current coefficient index
    int     fZExpMaxCoef; ///< max number of coefficients to use
    string  fZExpPath;    ///< algorithm path to get coefficients
+   bool fUseCustomT0; ///< If use custom T0 for z-exp
+   double  fZExpT0; ///< T0 for z-exp that is used for the alternative model
    double  fZExpTwkDial[fZExpMaxSyst]; ///<
    double  fZExpDef    [fZExpMaxSyst]; ///<
    double  fZExpCurr   [fZExpMaxSyst]; ///< array of current parameter values
